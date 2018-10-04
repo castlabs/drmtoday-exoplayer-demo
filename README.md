@@ -1,4 +1,4 @@
-#ExpPlayer DRMtoday integration
+# ExoPlayer DRMtoday integration
 
 This repository hosts the DRMtoday ExoPlayer integration library. The library provides
 an implementation of the `MediaDrmCallback` that can be used to send DRM license requests for
@@ -55,3 +55,8 @@ drmtodayCallback.configure(
 );
 ```
 
+
+## ExoPlayer versions
+
+While the demo application in this repository is using ExoPlayer version 2.9.x, the
+library itself is compatible with previous 2.x version of ExoPlayer.
