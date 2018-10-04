@@ -60,3 +60,8 @@ drmtodayCallback.configure(
 
 While the demo application in this repository is using ExoPlayer version 2.9.x, the
 library itself is compatible with previous 2.x version of ExoPlayer.
+
+
+## License
+
+The library is released under the [Apache 2.0] (http://www.apache.org/licenses/LICENSE-2.0) license.
