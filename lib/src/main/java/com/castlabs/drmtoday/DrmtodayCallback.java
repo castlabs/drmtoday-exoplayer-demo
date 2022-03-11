@@ -1,14 +1,16 @@
 package com.castlabs.drmtoday;
 
 import android.net.Uri;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.annotation.StringDef;
-import android.util.Base64;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.StringDef;
+import android.util.Base64;
+import android.util.Log;
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.drm.ExoMediaDrm;
 import com.google.android.exoplayer2.drm.MediaDrmCallback;
+import com.google.android.exoplayer2.drm.MediaDrmCallbackException;
 import com.google.android.exoplayer2.upstream.DataSourceInputStream;
 import com.google.android.exoplayer2.upstream.DataSpec;
 import com.google.android.exoplayer2.upstream.HttpDataSource;
@@ -220,18 +222,24 @@ public class DrmtodayCallback implements com.google.android.exoplayer2.drm.Media
     }
 
     @Override
-    public byte[] executeProvisionRequest(UUID uuid, ExoMediaDrm.ProvisionRequest request) throws Exception {
+    public byte[] executeProvisionRequest(UUID uuid, ExoMediaDrm.ProvisionRequest request) {
         String url =
                 request.getDefaultUrl() + "&signedRequest=" + Util.fromUtf8Bytes(request.getData());
-        return executePost(dataSourceFactory, url, EMPTY_BYTE_ARRAY, null);
+        try {
+            return executePost(dataSourceFactory, url, EMPTY_BYTE_ARRAY, null);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     @Override
-    public byte[] executeKeyRequest(UUID uuid, ExoMediaDrm.KeyRequest request) throws IOException {
+    public byte[] executeKeyRequest(UUID uuid, ExoMediaDrm.KeyRequest request) throws MediaDrmCallbackException {
         try{
             validateConfiguration();
         }catch (IllegalArgumentException e) {
-            throw new IOException("DRMtoday configuration invalid:" + e.getMessage(), e);
+            Log.e("DrmtodayEnvironment",">>> DRMtoday configuration invalid:" + e.getMessage(), e);
+            return null;
         }
 
         boolean widevine = uuid.equals(C.WIDEVINE_UUID);
@@ -283,9 +291,11 @@ public class DrmtodayCallback implements com.google.android.exoplayer2.drm.Media
         try {
             bytes = executePost(dataSourceFactory, uri.toString(), request.getData(), requestProperties);
         } catch (FileNotFoundException e) {
-            throw new IOException("License not found");
+            Log.e("DrmtodayEnvironment",">>> License not found");
+            return null;
         } catch (IOException e) {
-            throw new IOException("Error during license acquisition", e);
+            Log.e("DrmtodayEnvironment",">>> Error during license acquisition", e);
+            return null;
         }
 
         if (widevine) {
@@ -293,7 +303,8 @@ public class DrmtodayCallback implements com.google.android.exoplayer2.drm.Media
                 JSONObject jsonObject = new JSONObject(new String(bytes));
                 return Base64.decode(jsonObject.getString("license"), Base64.DEFAULT);
             } catch (JSONException e) {
-                throw new IOException("Error while parsing widevine response", e);
+                Log.e("DrmtodayEnvironment",">>> Error while parsing widevine response", e);
+                return null;
             }
         } else {
             return bytes;

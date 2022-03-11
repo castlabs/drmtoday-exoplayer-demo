@@ -23,14 +23,26 @@ This will provide a statically configured instance that you can pass to your Exo
 DrmSessionManager:
 
 ```
-player = ExoPlayerFactory.newSimpleInstance(this,
-        new DefaultRenderersFactory(this),
-        new DefaultTrackSelector(),
-        new DefaultDrmSessionManager<>(
-                drmSystemUuid,
-                mediaDrm,
-                drmtodayCallback,
-                null));
+DrmSessionManager drmSessionManager =
+        new DefaultDrmSessionManager.Builder()
+                .setUuidAndExoMediaDrmProvider(drmSystemUuid, FrameworkMediaDrm.DEFAULT_PROVIDER)
+                .build(drmtodayCallback);
+```
+
+Finally, you need to pass DrmSessionManager to the MediaSource that is used by the player:
+
+```
+player = new ExoPlayer.Builder(this)
+        .setRenderersFactory(new DefaultRenderersFactory(this))
+        .setTrackSelector(new DefaultTrackSelector())
+        .build();
+
+DataSource.Factory dataSourceFactory = new DefaultDataSourceFactory(this, userAgent);
+MediaSource videoSource = new DashMediaSource.Factory(dataSourceFactory)
+        .setDrmSessionManagerProvider(unusedMediaItem -> drmSessionManager)
+        .createMediaSource(MediaItem.fromUri(Uri.parse("https://demo.cf.castlabs.com/media/prestodrm/Manifest.mpd")));
+
+player.prepare(videoSource);
 ```
 
 If you need to re-use the player instance for different content, you can also dynamically
@@ -58,8 +70,8 @@ drmtodayCallback.configure(
 
 ## ExoPlayer versions
 
-While the demo application in this repository is using ExoPlayer version 2.9.x, the
-library itself is compatible with previous 2.x version of ExoPlayer.
+While the demo application in this repository is using ExoPlayer version 2.17.x, the
+library itself is compatible with previous 2.1x.x version of ExoPlayer.
 
 
 ## License

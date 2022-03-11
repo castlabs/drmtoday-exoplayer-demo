@@ -17,16 +17,17 @@ package com.castlabs.drmtoday.demo;
 
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.Toast;
 
 import com.castlabs.drmtoday.DrmtodayCallback;
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.DefaultRenderersFactory;
-import com.google.android.exoplayer2.ExoPlayerFactory;
-import com.google.android.exoplayer2.SimpleExoPlayer;
+import com.google.android.exoplayer2.ExoPlayer;
+import com.google.android.exoplayer2.MediaItem;
 import com.google.android.exoplayer2.drm.DefaultDrmSessionManager;
+import com.google.android.exoplayer2.drm.DrmSessionManager;
 import com.google.android.exoplayer2.drm.FrameworkMediaDrm;
 import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.source.dash.DashMediaSource;
@@ -34,7 +35,7 @@ import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.ui.PlayerView;
 import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
-import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
+import com.google.android.exoplayer2.upstream.DefaultHttpDataSource;
 import com.google.android.exoplayer2.upstream.HttpDataSource;
 import com.google.android.exoplayer2.util.Util;
 
@@ -42,7 +43,7 @@ import java.util.UUID;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
-    private SimpleExoPlayer player;
+    private ExoPlayer player;
     private FrameworkMediaDrm mediaDrm;
 
     @Override
@@ -59,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
             // UUID drmSystemUuid = C.PLAYREADY_UUID;
 
             // We need an HttpDataSource for the DRM callback
-            HttpDataSource.Factory httpDataSourceFactory = new DefaultHttpDataSourceFactory(userAgent);
+            HttpDataSource.Factory httpDataSourceFactory = new DefaultHttpDataSource.Factory().setUserAgent(userAgent);
 
             // Create an instance of the Media DRM
             mediaDrm = FrameworkMediaDrm.newInstance(drmSystemUuid);
@@ -72,20 +73,22 @@ public class MainActivity extends AppCompatActivity {
 
             // Create an exo player instance and make sure we pass the
             // drmtoday callback to the drm session manager
-            player = ExoPlayerFactory.newSimpleInstance(this,
-                    new DefaultRenderersFactory(this),
-                    new DefaultTrackSelector(),
-                    new DefaultDrmSessionManager<>(
-                            drmSystemUuid,
-                            mediaDrm,
-                            drmtodayCallback,
-                            null));
+            player = new ExoPlayer.Builder(this)
+                    .setRenderersFactory(new DefaultRenderersFactory(this))
+                    .setTrackSelector(new DefaultTrackSelector())
+                    .build();
+
+            DrmSessionManager drmSessionManager =
+                    new DefaultDrmSessionManager.Builder()
+                            .setUuidAndExoMediaDrmProvider(drmSystemUuid, FrameworkMediaDrm.DEFAULT_PROVIDER)
+                            .build(drmtodayCallback);
 
 
             // Load content. NOTE: We also configure the content related DRM parameters below
             DataSource.Factory dataSourceFactory = new DefaultDataSourceFactory(this, userAgent);
-            MediaSource videoSource = new DashMediaSource.Factory(dataSourceFactory).createMediaSource(
-                    Uri.parse("https://demo.cf.castlabs.com/media/prestodrm/Manifest.mpd"));
+            MediaSource videoSource = new DashMediaSource.Factory(dataSourceFactory)
+                    .setDrmSessionManagerProvider(unusedMediaItem -> drmSessionManager)
+                    .createMediaSource(MediaItem.fromUri(Uri.parse("https://demo.cf.castlabs.com/media/prestodrm/Manifest.mpd")));
 
             // Since the DRM configuration is content specific, we need to
             // configure the DRMtoday callback accordingly

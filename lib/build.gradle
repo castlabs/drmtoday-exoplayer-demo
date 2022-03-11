@@ -9,10 +9,10 @@ def versionCode() {
 }
 
 android {
-    compileSdkVersion 27
+    compileSdkVersion 31
     defaultConfig {
         minSdkVersion 19
-        targetSdkVersion 27
+        targetSdkVersion 31
         versionCode versionCode()
         versionName project.version
     }
@@ -25,4 +25,5 @@ android {
 
 dependencies {
     implementation 'com.google.android.exoplayer:exoplayer-core:' + getProperty('exo.version')
+    implementation 'com.android.support:support-annotations:27.1.1'
 }
