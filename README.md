@@ -10,7 +10,7 @@ You can create an instance of the callback as follows:
 DrmtodayCallback drmtodayCallback = new DrmtodayCallback(
         httpDataSourceFactory, // The data source
         DrmtodayCallback.DRMTODAY_STAGING, // The Environment
-        "six", // THe merchant
+        "six", // The merchant
         "purchase", // The User ID
         "default", // The Session ID
         null, // The (optional) auth token
