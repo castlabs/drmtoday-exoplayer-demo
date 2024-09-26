@@ -9,10 +9,10 @@ def versionCode() {
 }
 
 android {
-    compileSdkVersion 31
+    compileSdkVersion 34
     defaultConfig {
         minSdkVersion 19
-        targetSdkVersion 31
+        targetSdkVersion 34
         versionCode versionCode()
         versionName project.version
     }
@@ -21,9 +21,12 @@ android {
         sourceCompatibility 1.8
         targetCompatibility 1.8
     }
+
+    namespace "com.castlabs.drmtoday"
 }
 
 dependencies {
     implementation 'com.google.android.exoplayer:exoplayer-core:' + getProperty('exo.version')
     implementation 'com.android.support:support-annotations:27.1.1'
+
 }
