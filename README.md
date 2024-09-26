@@ -34,7 +34,7 @@ Finally, you need to pass DrmSessionManager to the MediaSource that is used by t
 ```
 player = new ExoPlayer.Builder(this)
         .setRenderersFactory(new DefaultRenderersFactory(this))
-        .setTrackSelector(new DefaultTrackSelector())
+        .setTrackSelector(new DefaultTrackSelector(this))
         .build();
 
 DataSource.Factory dataSourceFactory = new DefaultDataSourceFactory(this, userAgent);
@@ -70,7 +70,7 @@ drmtodayCallback.configure(
 
 ## ExoPlayer versions
 
-While the demo application in this repository is using ExoPlayer version 2.18.1, the
+While the demo application in this repository is using ExoPlayer version 2.19.1, the
 library itself is compatible with previous 2.1x.x version of ExoPlayer.
 
 
