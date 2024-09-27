@@ -14,8 +14,7 @@ DrmtodayCallback drmtodayCallback = new DrmtodayCallback(
         "purchase", // The User ID
         "default", // The Session ID
         null, // The (optional) auth token
-        null, // The (optional) asset ID. For debugging purposes only. Overrides keyIds from DASH manifest
-        null // The (optional) variant ID. For debugging purposes only. Overrides keyIds from DASH manifest
+        null // The (optional) asset ID. For debugging purposes only. Overrides keyIds from DASH manifest
 );
 ```
 
@@ -62,8 +61,7 @@ drmtodayCallback.configure(
         "purchase",    // The User ID
         "default",   // The Session ID
         null, // The (optional) auth token
-        null, // The (optional) asset ID. For debugging purposes only. Overrides keyIds from DASH manifest
-        null // The (optional) variant ID. For debugging purposes only. Overrides keyIds from DASH manifest
+        null // The (optional) asset ID. For debugging purposes only. Overrides keyIds from DASH manifest
 );
 ```
 

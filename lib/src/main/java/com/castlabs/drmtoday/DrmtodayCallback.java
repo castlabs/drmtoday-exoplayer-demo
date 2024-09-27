@@ -75,10 +75,6 @@ public class DrmtodayCallback implements com.google.android.exoplayer2.drm.Media
      */
     private static final String DRMTODAY_ASSET_ID_PARAM = "assetId";
     /**
-     * (optional) The variantId of the requested asset. If no variantId is used for identifying the asset, leave out the Query parameter.
-     */
-    private static final String DRMTODAY_VARIANT_ID_PARAM = "variantId";
-    /**
      * Debug purposes.
      */
     private static final String DRMTODAY_LOG_REQUEST_ID_PARAM = "logRequestId";
@@ -96,7 +92,6 @@ public class DrmtodayCallback implements com.google.android.exoplayer2.drm.Media
     private final HttpDataSource.Factory dataSourceFactory;
     private String drmTodayUrl;
     private String assetId;
-    private String variantId;
     private String merchant;
     private String userId;
     private String sessionId;
@@ -104,7 +99,7 @@ public class DrmtodayCallback implements com.google.android.exoplayer2.drm.Media
 
     /**
      * Create an instance of the DRMtoday  callback. Note that this instance is not configured
-     * yet and you need to call {@link #configure(String, String, String, String, String, String, String)}
+     * yet and you need to call {@link #configure(String, String, String, String, String, String)}
      * before the first DRM license request is triggered.
      *
      * @param dataSourceFactory The data source factory
@@ -122,7 +117,6 @@ public class DrmtodayCallback implements com.google.android.exoplayer2.drm.Media
      * @param merchant          The merchant identifer (mandatory)
      * @param assetId           The assetID for the content. This is not strictly required for Widevine and
      *                          should be used for debugging purposes only. Overrides keyIds from DASH manifest
-     * @param variantId         The variantID or {@code null}. See also a remark for assetId
      * @param userId            The userID (mandatory)
      * @param sessionId         The sessionID (mandatory)
      */
@@ -132,9 +126,8 @@ public class DrmtodayCallback implements com.google.android.exoplayer2.drm.Media
             @NonNull final String merchant,
             @NonNull final String userId,
             @NonNull final String sessionId,
-            @Nullable final String assetId,
-            @Nullable final String variantId) {
-        this(dataSourceFactory, drmTodayUrl, merchant, userId, sessionId, null, assetId, variantId);
+            @Nullable final String assetId) {
+        this(dataSourceFactory, drmTodayUrl, merchant, userId, sessionId, null, assetId);
     }
 
     /**
@@ -146,7 +139,6 @@ public class DrmtodayCallback implements com.google.android.exoplayer2.drm.Media
      * @param merchant          The merchant identifer (mandatory)
      * @param assetId           The assetID for the content. This is not strictly required for Widevine and
      *                          should be used for debugging purposes only. Overrides keyIds from DASH manifest
-     * @param variantId         The variantID or {@code null}. See also a remark for assetId
      * @param userId            The userID (mandatory)
      * @param sessionId         The sessionID (mandatory)
      * @param authToken         The auth token or {@code null} if callback with userID/sessionID is used
@@ -159,10 +151,9 @@ public class DrmtodayCallback implements com.google.android.exoplayer2.drm.Media
             @NonNull final String userId,
             @NonNull final String sessionId,
             @Nullable final String authToken,
-            @Nullable final String assetId,
-            @Nullable final String variantId) {
+            @Nullable final String assetId) {
         this.dataSourceFactory = dataSourceFactory;
-        configure(drmTodayUrl, merchant, userId, sessionId, authToken, assetId, variantId);
+        configure(drmTodayUrl, merchant, userId, sessionId, authToken, assetId);
     }
 
     /**
@@ -173,7 +164,6 @@ public class DrmtodayCallback implements com.google.android.exoplayer2.drm.Media
      * @param merchant          The merchant identifer (mandatory)
      * @param assetId           The assetID for the content. This is not strictly required for Widevine and
      *                          should be used for debugging purposes only. Overrides keyIds from DASH manifest
-     * @param variantId         The variantID or {@code null}. See also a remark for assetId
      * @param userId            The userID (mandatory)
      * @param sessionId         The sessionID (mandatory)
      * @param authToken         The auth token or {@code null} if callback with userID/sessionID is used
@@ -186,12 +176,10 @@ public class DrmtodayCallback implements com.google.android.exoplayer2.drm.Media
             @NonNull final String userId,
             @NonNull final String sessionId,
             @Nullable final String authToken,
-            @Nullable final String assetId,
-            @Nullable final String variantId) {
+            @Nullable final String assetId) {
         this.drmTodayUrl = drmTodayUrl;
         this.merchant = merchant;
         this.assetId = assetId;
-        this.variantId = variantId;
         this.userId = userId;
         this.sessionId = sessionId;
         this.authToken = authToken;
@@ -250,13 +238,10 @@ public class DrmtodayCallback implements com.google.android.exoplayer2.drm.Media
         // Common parameters
         // We append a unique request ID
         builder.appendQueryParameter(DRMTODAY_LOG_REQUEST_ID_PARAM, generateRequestId());
-        // If the asset ID and variant ID are configured, we append them
+        // If the asset ID is configured, we append it
         // as query parameters. This values override keyIds from DASH manifest
         if (assetId != null) {
             builder.appendQueryParameter(DRMTODAY_ASSET_ID_PARAM, assetId);
-        }
-        if (variantId != null) {
-            builder.appendQueryParameter(DRMTODAY_VARIANT_ID_PARAM, variantId);
         }
 
         // create a map for additional header parameters
