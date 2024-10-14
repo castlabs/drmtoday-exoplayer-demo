@@ -14,8 +14,7 @@ DrmtodayCallback drmtodayCallback = new DrmtodayCallback(
         "purchase", // The User ID
         "default", // The Session ID
         null, // The (optional) auth token
-        null, // The (optional) asset ID. For debugging purposes only. Overrides keyIds from DASH manifest
-        null // The (optional) variant ID. For debugging purposes only. Overrides keyIds from DASH manifest
+        null // The (optional) asset ID. For debugging purposes only. Overrides keyIds from DASH manifest
 );
 ```
 
@@ -34,7 +33,7 @@ Finally, you need to pass DrmSessionManager to the MediaSource that is used by t
 ```
 player = new ExoPlayer.Builder(this)
         .setRenderersFactory(new DefaultRenderersFactory(this))
-        .setTrackSelector(new DefaultTrackSelector())
+        .setTrackSelector(new DefaultTrackSelector(this))
         .build();
 
 DataSource.Factory dataSourceFactory = new DefaultDataSourceFactory(this, userAgent);
@@ -62,15 +61,14 @@ drmtodayCallback.configure(
         "purchase",    // The User ID
         "default",   // The Session ID
         null, // The (optional) auth token
-        null, // The (optional) asset ID. For debugging purposes only. Overrides keyIds from DASH manifest
-        null // The (optional) variant ID. For debugging purposes only. Overrides keyIds from DASH manifest
+        null // The (optional) asset ID. For debugging purposes only. Overrides keyIds from DASH manifest
 );
 ```
 
 
 ## ExoPlayer versions
 
-While the demo application in this repository is using ExoPlayer version 2.18.1, the
+While the demo application in this repository is using ExoPlayer version 2.19.1, the
 library itself is compatible with previous 2.1x.x version of ExoPlayer.
 
 
